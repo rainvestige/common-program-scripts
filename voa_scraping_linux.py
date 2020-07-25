@@ -105,7 +105,7 @@ def download_src(url, date, save_dir):
 
 def main():
     # make dirs for saving VOA sources
-    save_dir = r'/media/windows/Projects/python_tutorials/Download_VOA'
+    save_dir = r'/media/windows/Media/Audios/voa/'
     os.makedirs(save_dir, exist_ok=True)
     
     count = 0  # count the downloaded files

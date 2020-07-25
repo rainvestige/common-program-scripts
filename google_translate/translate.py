@@ -5,13 +5,13 @@ from googletrans import Translator
 def main():
     translator = Translator()
     while(True):
-        print('************************************************************')
+        print('{:*<80}'.format('*'))
         text = input('Input the sentence that will be translated: ')
         if text == 'quit':
             return None
         if not text: 
             continue
-        result = translator.translate(text, dest='zh-CN')
+        result = translator.translate(text.replace('\n', ' '), dest='zh-CN')
         extra_data = result.extra_data
         print("translated result: ", result.text)
         if not extra_data['all-translations']:
