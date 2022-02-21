@@ -1,5 +1,6 @@
 # coding=utf-8
 from googletrans import Translator
+from httpcore import SyncHTTPProxy
 import readline
 
 class Completer:
@@ -30,35 +31,43 @@ def get_word_list(filename):
 def main():
     word_list_filename = "/usr/share/dict/words"
     word_list = get_word_list(word_list_filename)
-    
+
     completer = Completer(word_list)
     readline.parse_and_bind("tab: complete")
     readline.set_completer(completer.complete)
 
+    service_urls = ['translate.google.com.hk']
     translator = Translator()
     try:
         while(True):
-            #print('{:*<80}'.format('*'))
-            #text = input('Input the sentence that will be translated: ')
-            text = input('en->zh : ')
+            text = input('\33[1;34m' + 'en->zh : \33[0m')
             if text == 'quit':
                 return None
-            if not text: 
+            if not text:
                 continue
-            result = translator.translate(text.replace('\n', ' '), dest='zh-CN')
+            try:
+                result = translator.translate(text, dest='zh-cn')
+            except AttributeError:
+                print('Attribute Error')
+                continue
             extra_data = result.extra_data
-            print("translated result: ", result.text)
+            print(f"translated result: {result.text}\t"
+                  f"pronunciation: {extra_data['translation'][1][-1]}")
             if not extra_data['all-translations']:
                 continue
             for v in extra_data['all-translations']:
                 print('词性: {}'.format(v[0]))
                 print('All-Trans: {}'.format(v[1]))
-                for i in range(len(v[1])):
-                    print('No.{0}: {1:{3}<6} Synonyms: {2}'.format(
-                        i, v[2][i][0].strip('!'), v[2][i][1][:3], chr(12288)))
+                try:
+                    for i in range(len(v[1])):
+                        print('No.{0}: {1:{3}<6} Synonyms: {2}'
+                            .format(i, v[2][i][0].strip('!'),
+                                    v[2][i][1][:3], chr(12288)))
+                except IndexError:
+                    print('Index Error')
+                    continue
     except (EOFError, KeyboardInterrupt) as e:
         print('\nShutting down...')
 
 if __name__ == '__main__':
     main()
-
